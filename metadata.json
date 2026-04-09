@@ -1,0 +1,5 @@
+{
+  "name": "SwissGuard AI",
+  "description": "AI-powered compliance and risk auditor for Swiss legal documents and Smart Contracts, verifying LPD/GDPR and FINMA compliance.",
+  "requestFramePermissions": []
+}
