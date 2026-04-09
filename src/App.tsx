@@ -21,9 +21,10 @@ import { GoogleGenAI } from "@google/genai";
 import { jsPDF } from 'jspdf';
 import { cn } from './lib/utils';
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 
 // Set worker source for pdfjs
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 // --- Global Types ---
 declare global {
@@ -463,7 +464,13 @@ export default function App() {
       try {
         if (file.type === 'application/pdf') {
           const arrayBuffer = await file.arrayBuffer();
-          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+          const loadingTask = pdfjsLib.getDocument({ 
+            data: arrayBuffer,
+            useWorkerFetch: false, // More robust in iframes
+            isEvalSupported: false, // Safer in some environments
+            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@5.6.205/cmaps/',
+            cMapPacked: true,
+          });
           const pdf = await loadingTask.promise;
           let fullText = '';
           for (let i = 1; i <= pdf.numPages; i++) {
